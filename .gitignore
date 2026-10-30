@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.coverage
+coverage.xml
+test-results.xml
+.scannerwork/
+dependency-check-report.*
+zap-report.*
+infra/.env

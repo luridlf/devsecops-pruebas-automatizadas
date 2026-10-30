@@ -1,0 +1,51 @@
+# Infraestructura local: Jenkins + SonarQube en la red "devsecops".
+# Uso:  docker compose --env-file .env up -d --build
+services:
+  jenkins:
+    build: ./jenkins
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    group_add:
+      - "0"   # grupo dueño de /var/run/docker.sock en Docker Desktop
+    environment:
+      JENKINS_ADMIN_USER: ${JENKINS_ADMIN_USER}
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
+      SONAR_TOKEN: ${SONAR_TOKEN}
+      NVD_API_KEY: ${NVD_API_KEY}
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dc-data:/var/dependency-check-data
+    networks: [devsecops]
+    restart: unless-stopped
+
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    networks: [devsecops]
+    restart: unless-stopped
+
+networks:
+  devsecops:
+    external: true
+
+volumes:
+  jenkins_home:
+  dc-data:
+    external: true
+  sonarqube_data:
+    external: true
+  sonarqube_extensions:
+    external: true
+  sonarqube_logs:
+    external: true

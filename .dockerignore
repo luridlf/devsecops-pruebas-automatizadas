@@ -1,0 +1,6 @@
+.git
+infra
+docs
+.scannerwork
+__pycache__
+*.pyc
